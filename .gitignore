@@ -1,0 +1,8 @@
+node_modules
+tmp
+build
+prebuilds
+.cache
+.DS_Store
+models/*
+!models/README.md

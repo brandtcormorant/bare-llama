@@ -1,0 +1,40 @@
+{
+  "name": "bare-addon-llama",
+  "version": "0.0.0",
+  "main": "index.js",
+  "addon": true,
+  "scripts": {
+    "format": "prettier . --write",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "imports": {
+    "url": {
+      "bare": "bare-url",
+      "default": "url"
+    },
+    "os": {
+      "bare": "bare-os",
+      "default": "os"
+    },
+    "path": {
+      "bare": "bare-path",
+      "default": "path"
+    }
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bare-os": "^3.3.0",
+    "bare-path": "^3.0.0",
+    "bare-url": "^2.1.0",
+    "cmake-bare": "^1.4.3",
+    "cmake-fetch": "^1.1.1",
+    "cmake-napi": "^1.1.2"
+  },
+  "devDependencies": {
+    "brittle": "^3.7.0",
+    "prettier": "^3.4.2",
+    "prettier-config-standard": "^7.0.0"
+  }
+}

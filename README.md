@@ -28,10 +28,6 @@ await model.destroy()
 
 ## Usage
 
-### Class: LlamaModel
-
-The main interface for interacting with llama models.
-
 Generate text:
 
 ```javascript

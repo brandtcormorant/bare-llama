@@ -6,7 +6,17 @@ Native llama.cpp bindings for the [bare](https://github.com/holepunchto/bare) ru
 
 This is nowhere near ready to use.
 
-If you want to use bare-llama be prepared to become part of the development team 😏
+If you want to use bare-llama be prepared to join the development team 😏
+
+## Bare & Pear & nothing else just yet
+
+This is the beginnings of an addon for the bare js runtime, which means we'll be able to use it with [Pear, a js runtime that enables p2p applications](https://github.com/holepunchto/pear).
+
+Bare is the core runtime of Pear.
+
+### Nope: Node.js, Deno, Bun, etc.
+
+Node.js support is possible, probably not Deno or Bun. But maybe! Who knows?! If you know let me know. I have no idea.
 
 ## Quick Start
 

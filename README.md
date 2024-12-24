@@ -100,4 +100,4 @@ Built on [llama.cpp](https://github.com/ggerganov/llama.cpp) and [bare](https://
 
 ## License
 
-MIT
+Apache-2.0

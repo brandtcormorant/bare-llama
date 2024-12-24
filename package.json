@@ -3,10 +3,24 @@
   "version": "0.0.0",
   "main": "index.js",
   "addon": true,
+  "exports": {
+    ".": "./index.js",
+    "./package": "./package.json"
+  },
   "scripts": {
     "format": "prettier . --write",
     "test": "bare test/*.test.js"
   },
+  "files": [
+    "index.js",
+    "binding.c",
+    "binding.js",
+    "CMakeLists.txt",
+    "docs",
+    "example.js",
+    "prebuilds",
+    "test"
+  ],
   "imports": {
     "url": {
       "bare": "bare-url",
@@ -22,7 +36,7 @@
     }
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "description": "",
   "dependencies": {
     "bare-os": "^3.3.0",

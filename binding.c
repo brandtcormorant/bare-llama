@@ -452,13 +452,13 @@ bare_llama_context_generate (js_env_t *env, js_callback_info_t *info) {
     int ret = llama_decode(ctx->ctx, batch);
 
     if (ret != 0) {
-    free(tokens);
-    free(text);
-    llama_batch_free(batch);
-    llama_sampler_free(chain);
-    err = js_throw_error(env, NULL, "Failed to process initial text");
-    assert(err == 0);
-    return NULL;
+        free(tokens);
+        free(text);
+        llama_batch_free(batch);
+        llama_sampler_free(chain);
+        err = js_throw_error(env, NULL, "Failed to process initial text");
+        assert(err == 0);
+        return NULL;
     }
 
     // Make sure processing is complete
@@ -467,13 +467,13 @@ bare_llama_context_generate (js_env_t *env, js_callback_info_t *info) {
     const float *logits = llama_get_logits(ctx->ctx);
 
     if (logits == NULL) {
-    free(tokens);
-    free(text);
-    llama_batch_free(batch);
-    llama_sampler_free(chain);
-    err = js_throw_error(env, NULL, "No logits available");
-    assert(err == 0);
-    return NULL;
+        free(tokens);
+        free(text);
+        llama_batch_free(batch);
+        llama_sampler_free(chain);
+        err = js_throw_error(env, NULL, "No logits available");
+        assert(err == 0);
+        return NULL;
     }
 
     // Sample first token using the last position

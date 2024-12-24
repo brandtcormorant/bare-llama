@@ -33,6 +33,7 @@ FetchContent_GetProperties(
 )
 
 # couldn't authenticate with fetch_package!
+# tried to use a personal access token but it didn't work
 # fetch_package("github:/ggerganov/llama.cpp #master")
 
 add_bare_module(bare_llama)
@@ -67,16 +68,3 @@ target_include_directories(
   ${llama_SOURCE_DIR}/common
   ${llama_SOURCE_DIR}/ggml/include
 )
-
-# # Install rules for dylibs
-# if(APPLE)
-#     install(FILES
-#         ${llama_BINARY_DIR}/src/libllama.dylib
-#         ${llama_BINARY_DIR}/ggml/src/libggml.dylib
-#         ${llama_BINARY_DIR}/ggml/src/libggml-cpu.dylib
-#         ${llama_BINARY_DIR}/ggml/src/ggml-blas/libggml-blas.dylib
-#         ${llama_BINARY_DIR}/ggml/src/ggml-metal/libggml-metal.dylib
-#         ${llama_BINARY_DIR}/ggml/src/libggml-base.dylib
-#         DESTINATION lib
-#     )
-# endif()

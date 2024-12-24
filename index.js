@@ -152,15 +152,26 @@ class LlamaModel {
 
   /**
    * Creates a new LlamaModel instance for text generation and embeddings
+   * @param {string} modelFilepath - Path to the model GGUF file
    * @param {Object} options - Model configuration options
-   * @param {string} [options.modelFilepath] - Path to the model GGUF file
    * @param {boolean} [options.embedding=false] - Whether to create an embedding model (true) or generation model (false)
-   * @param {LlamaModelContextOptions} [options.context] - Customize the initial context created for this model, defaults provided by LlamaModelContext
-   * @returns {Promise<LlamaModel>} The initialized model instance
+   * @param {boolean} [options.addSpecial=false] - Whether to add special tokens to output
+   * @param {boolean} [options.parseSpecial=false] - Whether to parse special tokens in text
+   * @param {boolean} [options.removeSpecial=false] - Whether to remove special tokens from output
+   * @param {boolean} [options.unparseSpecial=false] - Whether to unparse special tokens in text
+   * @param {Object} [options.context] - Customize the initial context created for this model
    */
   constructor(modelFilepath, options = {}) {
     this.modelFilepath = modelFilepath;
-    this.embedding = options.embedding || false;
+    this.options = {
+      embedding: false,
+      addSpecial: false,
+      parseSpecial: false,
+      removeSpecial: false,
+      unparseSpecial: false,
+      context: {},
+      ...options,
+    };
   }
 
   /**
@@ -182,23 +193,34 @@ class LlamaModel {
   }
 
   /**
+   * @typedef {Object} LlamaModelMetadata
+   * @property {number} parameters - The number of parameters in the model
+   * @property {number} contextWindow - The context window size of the model
+   * @property {string} filepath - File path to the model
+   * @property {boolean} embedding - Additional model metadata
+   * @property {LlamaModelContextOptions} [context] - Metadata about the model context
+   */
+
+  /**
    * Get metadata from the model instance such as parameter count and name
    * @returns {Promise<LlamaModelMetadata>}
    */
   async getMetadata() {
     const sourceMetadata = await getModelMetadata(this.#model);
-
+    console.log("this.options.embedding", this.options.embedding, this.options);
+    /** @type {LlamaModelMetadata} */
     const metadata = {
       ...sourceMetadata,
       filepath: this.modelFilepath,
-      embedding: this.embedding,
-    }
+      embedding: this.options.embedding,
+    };
 
     if (this.#context) {
-      metadata.context = this.#context.options
+      metadata.context = this.#context.options;
     }
 
-    return metadata
+    console.log("metadata?????", metadata);
+    return metadata;
   }
 
   /**
@@ -219,10 +241,10 @@ class LlamaModel {
    */
   async tokenize(text, options = {}) {
     const overridenOptions = {
-      addSpecial: this.addSpecial,
-      parseSpecial: this.parseSpecial,
-      ...options
-    }
+      addSpecial: this.options.addSpecial,
+      parseSpecial: this.options.parseSpecial,
+      ...options,
+    };
 
     return tokenize(this.#model, text, overridenOptions);
   }
@@ -237,10 +259,10 @@ class LlamaModel {
    */
   async detokenize(tokens, options = {}) {
     const overridenOptions = {
-      removeSpecial: this.removeSpecial,
-      unparseSpecial: this.unparseSpecial,
-      ...options
-    }
+      removeSpecial: this.options.removeSpecial,
+      unparseSpecial: this.options.unparseSpecial,
+      ...options,
+    };
 
     return detokenize(this.#model, tokens, overridenOptions);
   }
@@ -252,14 +274,14 @@ class LlamaModel {
    * @param {boolean} [options.existing=true] - Return existing context if one exists rather than creating new
    * @param {number} [options.n_ctx=512] - Maximum tokens in context
    * @param {number} [options.n_batch=512] - Maximum tokens to process in parallel
-   * @returns {Promise<LlamaContext>} The context instance
+   * @returns {Promise<LlamaModelContext>} The context instance
    */
   async context(options = {}) {
     if (this.#context && options.existing) {
       return this.#context;
     }
 
-    this.#context = await LlamaModelContext.create(this.#model, options)
+    this.#context = await LlamaModelContext.create(this.#model, options);
     return this.#context;
   }
 
@@ -306,10 +328,10 @@ class LlamaModelContext {
    * @param {LlamaModel} model - The LlamaModel instance to create a context for
    * @param {LlamaModelContextOptions} options - Configuration options for the context
    */
-  static async create (model, options = {}) {
-    const context = new LlamaModelContext(model, options)
-    await context.init()
-    return context
+  static async create(model, options = {}) {
+    const context = new LlamaModelContext(model, options);
+    await context.init();
+    return context;
   }
 
   /**
@@ -326,15 +348,16 @@ class LlamaModelContext {
    * @param {LlamaModel} model - The LlamaModel instance to create a context for
    * @param {LlamaModelContextOptions} options - Configuration options for the context
    */
-  constructor(model, options = {
-    contextSize: 2048,
-    batchSize: 512,
-    embedding: false,
-    addSpecial: false,
-    parseSpecial: false,
-  }) {
+  constructor(model, options = {}) {
     this.#model = model;
-    this.options = options
+    this.options = {
+      contextSize: 2048,
+      batchSize: 512,
+      embedding: false,
+      addSpecial: false,
+      parseSpecial: false,
+      ...options,
+    };
   }
 
   /**
@@ -369,15 +392,17 @@ class LlamaModelContext {
    * @returns {Promise<ArrayBuffer>} Array of token embeddings
    */
   async encode(text, options = {}) {
-    if (!this.embedding) {
-      throw new Error('Cannot encode text without an embedding context. Use `embedding: true` when creating the context.')
+    if (!this.options.embedding) {
+      throw new Error(
+        "Cannot encode text without an embedding context. Use `embedding: true` when creating the context.",
+      );
     }
 
     const overridenOptions = {
-      addSpecial: this.addSpecial,
-      parseSpecial: this.parseSpecial,
-      ...options
-    }
+      addSpecial: this.options.addSpecial,
+      parseSpecial: this.options.parseSpecial,
+      ...options,
+    };
 
     return binding.encode(this.#context, text, overridenOptions);
   }
@@ -392,15 +417,17 @@ class LlamaModelContext {
    * @returns {Promise<string>} Generated text
    */
   async generate(prompt, options = {}) {
-    if (this.embedding) {
-      throw new Error('Cannot generate text without a generation context. Use `embedding: false` when creating the context')
+    if (this.options.embedding) {
+      throw new Error(
+        "Cannot generate text without a generation context. Use `embedding: false` when creating the context",
+      );
     }
 
     const overridenOptions = {
-      addSpecial: this.addSpecial,
-      parseSpecial: this.parseSpecial,
-      ...options
-    }
+      addSpecial: this.options.addSpecial,
+      parseSpecial: this.options.parseSpecial,
+      ...options,
+    };
 
     return binding.generate(this.#context, prompt, overridenOptions);
   }

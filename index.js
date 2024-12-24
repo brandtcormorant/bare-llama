@@ -1,4 +1,4 @@
-const binding = require("./binding.js");
+const binding = require('./binding.js')
 
 /**
  * @typedef {Object} LlamaModelInstance
@@ -24,9 +24,9 @@ const binding = require("./binding.js");
  * @returns {Promise<LlamaModelInstance>}
  */
 async function createModel(modelFilepath, options = { logLevel: 0 }) {
-  const model = {};
-  await binding.createModel(model, modelFilepath, options);
-  return model;
+  const model = {}
+  await binding.createModel(model, modelFilepath, options)
+  return model
 }
 
 /**
@@ -36,7 +36,7 @@ async function createModel(modelFilepath, options = { logLevel: 0 }) {
  * @returns {Promise<void>}
  */
 async function loadModel(model, modelFilepath) {
-  await binding.loadModel(model, modelFilepath);
+  await binding.loadModel(model, modelFilepath)
 }
 
 /**
@@ -45,7 +45,7 @@ async function loadModel(model, modelFilepath) {
  * @returns {Promise<void>}
  */
 async function destroyModel(model) {
-  await binding.destroyModel(model);
+  await binding.destroyModel(model)
 }
 
 /**
@@ -54,7 +54,7 @@ async function destroyModel(model) {
  * @returns {Promise<LlamaModelInstanceMetadata>}
  */
 async function getModelMetadata(model) {
-  return binding.getModelMetadata(model);
+  return binding.getModelMetadata(model)
 }
 
 /**
@@ -67,7 +67,7 @@ async function getModelMetadata(model) {
  * @returns {Promise<ArrayBuffer>} Array of token IDs
  */
 async function tokenize(model, text, options = {}) {
-  return binding.tokenize(model, text, options);
+  return binding.tokenize(model, text, options)
 }
 
 /**
@@ -80,7 +80,7 @@ async function tokenize(model, text, options = {}) {
  * @returns {Promise<string>} Decoded text
  */
 async function detokenize(model, tokens, options = {}) {
-  return binding.detokenize(model, tokens, options);
+  return binding.detokenize(model, tokens, options)
 }
 
 /**
@@ -93,9 +93,9 @@ async function detokenize(model, tokens, options = {}) {
  * @returns {Promise<LlamaContextInstance>} The created context instance
  */
 async function createContext(model, options = {}) {
-  const context = {};
-  await binding.createContext(context, model, options);
-  return context;
+  const context = {}
+  await binding.createContext(context, model, options)
+  return context
 }
 
 /**
@@ -104,7 +104,7 @@ async function createContext(model, options = {}) {
  * @returns {Promise<void>}
  */
 async function destroyContext(context) {
-  return binding.destroyContext(context);
+  return binding.destroyContext(context)
 }
 
 /**
@@ -118,7 +118,7 @@ async function destroyContext(context) {
  * @returns {Promise<ArrayBuffer>} Array of token embeddings
  */
 async function encode(context, text, options = {}) {
-  return binding.encode(context, text);
+  return binding.encode(context, text)
 }
 
 /**
@@ -132,22 +132,22 @@ async function encode(context, text, options = {}) {
  * @returns {Promise<string>} Generated text
  */
 async function generate(context, prompt, options = {}) {
-  return binding.generate(context, prompt, options);
+  return binding.generate(context, prompt, options)
 }
 
 class LlamaModel {
   /** @type {LlamaModelInstance} */
-  #model;
+  #model
 
   /** @type {LlamaModelContext} */
-  #context;
+  #context
 
   static async create(options = {}) {
-    const model = new LlamaModel(options.modelFilepath, options);
-    await model.init();
-    await model.load();
-    await model.context(options);
-    return model;
+    const model = new LlamaModel(options.modelFilepath, options)
+    await model.init()
+    await model.load()
+    await model.context(options)
+    return model
   }
 
   /**
@@ -162,7 +162,7 @@ class LlamaModel {
    * @param {Object} [options.context] - Customize the initial context created for this model
    */
   constructor(modelFilepath, options = {}) {
-    this.modelFilepath = modelFilepath;
+    this.modelFilepath = modelFilepath
     this.options = {
       embedding: false,
       addSpecial: false,
@@ -170,8 +170,8 @@ class LlamaModel {
       removeSpecial: false,
       unparseSpecial: false,
       context: {},
-      ...options,
-    };
+      ...options
+    }
   }
 
   /**
@@ -180,7 +180,7 @@ class LlamaModel {
    * @private
    */
   async init() {
-    this.#model = await createModel(this.modelFilepath);
+    this.#model = await createModel(this.modelFilepath)
   }
 
   /**
@@ -189,7 +189,7 @@ class LlamaModel {
    * @private
    */
   async load() {
-    await loadModel(this.#model, this.modelFilepath);
+    await loadModel(this.#model, this.modelFilepath)
   }
 
   /**
@@ -206,21 +206,20 @@ class LlamaModel {
    * @returns {Promise<LlamaModelMetadata>}
    */
   async getMetadata() {
-    const sourceMetadata = await getModelMetadata(this.#model);
-    console.log("this.options.embedding", this.options.embedding, this.options);
+    const sourceMetadata = await getModelMetadata(this.#model)
+
     /** @type {LlamaModelMetadata} */
     const metadata = {
       ...sourceMetadata,
       filepath: this.modelFilepath,
-      embedding: this.options.embedding,
-    };
-
-    if (this.#context) {
-      metadata.context = this.#context.options;
+      embedding: this.options.embedding
     }
 
-    console.log("metadata?????", metadata);
-    return metadata;
+    if (this.#context) {
+      metadata.context = this.#context.options
+    }
+
+    return metadata
   }
 
   /**
@@ -228,7 +227,7 @@ class LlamaModel {
    * @returns {Promise<void>}
    */
   async destroy() {
-    await destroyModel(this.#model);
+    await destroyModel(this.#model)
   }
 
   /**
@@ -243,10 +242,10 @@ class LlamaModel {
     const overridenOptions = {
       addSpecial: this.options.addSpecial,
       parseSpecial: this.options.parseSpecial,
-      ...options,
-    };
+      ...options
+    }
 
-    return tokenize(this.#model, text, overridenOptions);
+    return tokenize(this.#model, text, overridenOptions)
   }
 
   /**
@@ -261,10 +260,10 @@ class LlamaModel {
     const overridenOptions = {
       removeSpecial: this.options.removeSpecial,
       unparseSpecial: this.options.unparseSpecial,
-      ...options,
-    };
+      ...options
+    }
 
-    return detokenize(this.#model, tokens, overridenOptions);
+    return detokenize(this.#model, tokens, overridenOptions)
   }
 
   /**
@@ -278,11 +277,11 @@ class LlamaModel {
    */
   async context(options = {}) {
     if (this.#context && options.existing) {
-      return this.#context;
+      return this.#context
     }
 
-    this.#context = await LlamaModelContext.create(this.#model, options);
-    return this.#context;
+    this.#context = await LlamaModelContext.create(this.#model, options)
+    return this.#context
   }
 
   /**
@@ -295,7 +294,7 @@ class LlamaModel {
    * @returns {Promise<ArrayBuffer>} Array of token embeddings
    */
   async encode(text, options = {}) {
-    return this.#context.encode(text, options);
+    return this.#context.encode(text, options)
   }
 
   /**
@@ -308,7 +307,7 @@ class LlamaModel {
    * @returns {Promise<string>} Generated text
    */
   async generate(prompt, options = {}) {
-    return this.#context.generate(prompt, options);
+    return this.#context.generate(prompt, options)
   }
 }
 
@@ -318,10 +317,10 @@ class LlamaModel {
  */
 class LlamaModelContext {
   /** @type {LlamaModel} */
-  #model;
+  #model
 
   /** @type {LlamaContextInstance} */
-  #context;
+  #context
 
   /**
    * Creates a new LlamaModelContext instance that is fully initialized and ready to use
@@ -329,9 +328,9 @@ class LlamaModelContext {
    * @param {LlamaModelContextOptions} options - Configuration options for the context
    */
   static async create(model, options = {}) {
-    const context = new LlamaModelContext(model, options);
-    await context.init();
-    return context;
+    const context = new LlamaModelContext(model, options)
+    await context.init()
+    return context
   }
 
   /**
@@ -349,15 +348,15 @@ class LlamaModelContext {
    * @param {LlamaModelContextOptions} options - Configuration options for the context
    */
   constructor(model, options = {}) {
-    this.#model = model;
+    this.#model = model
     this.options = {
       contextSize: 2048,
       batchSize: 512,
       embedding: false,
       addSpecial: false,
       parseSpecial: false,
-      ...options,
-    };
+      ...options
+    }
   }
 
   /**
@@ -368,10 +367,10 @@ class LlamaModelContext {
   async init(options = {}) {
     const overridenOptions = {
       ...this.options,
-      ...options,
-    };
+      ...options
+    }
 
-    this.#context = await createContext(this.#model, overridenOptions);
+    this.#context = await createContext(this.#model, overridenOptions)
   }
 
   /**
@@ -379,7 +378,7 @@ class LlamaModelContext {
    * @returns {Promise<void>}
    */
   async destroy() {
-    await destroyContext(this.#context);
+    await destroyContext(this.#context)
   }
 
   /**
@@ -394,17 +393,17 @@ class LlamaModelContext {
   async encode(text, options = {}) {
     if (!this.options.embedding) {
       throw new Error(
-        "Cannot encode text without an embedding context. Use `embedding: true` when creating the context.",
-      );
+        'Cannot encode text without an embedding context. Use `embedding: true` when creating the context.'
+      )
     }
 
     const overridenOptions = {
       addSpecial: this.options.addSpecial,
       parseSpecial: this.options.parseSpecial,
-      ...options,
-    };
+      ...options
+    }
 
-    return binding.encode(this.#context, text, overridenOptions);
+    return binding.encode(this.#context, text, overridenOptions)
   }
 
   /**
@@ -419,17 +418,17 @@ class LlamaModelContext {
   async generate(prompt, options = {}) {
     if (this.options.embedding) {
       throw new Error(
-        "Cannot generate text without a generation context. Use `embedding: false` when creating the context",
-      );
+        'Cannot generate text without a generation context. Use `embedding: false` when creating the context'
+      )
     }
 
     const overridenOptions = {
       addSpecial: this.options.addSpecial,
       parseSpecial: this.options.parseSpecial,
-      ...options,
-    };
+      ...options
+    }
 
-    return binding.generate(this.#context, prompt, overridenOptions);
+    return binding.generate(this.#context, prompt, overridenOptions)
   }
 }
 
@@ -445,5 +444,5 @@ module.exports = {
   encode,
   generate,
   LlamaModel,
-  LlamaModelContext,
-};
+  LlamaModelContext
+}

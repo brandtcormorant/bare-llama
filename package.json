@@ -5,7 +5,7 @@
   "addon": true,
   "scripts": {
     "format": "prettier . --write",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "bare test/*.test.js"
   },
   "imports": {
     "url": {

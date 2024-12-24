@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.27)
 find_package(cmake-bare REQUIRED PATHS node_modules/cmake-bare)
 # find_package(cmake-fetch REQUIRED PATHS node_modules/cmake-fetch)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_MACOSX_BUNDLE OFF)
 
 project(bare_llama C CXX)

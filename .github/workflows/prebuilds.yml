@@ -1,4 +1,4 @@
-name: Prebuild
+name: prebuilds
 on:
   workflow_dispatch:
 jobs:
